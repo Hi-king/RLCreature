@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using MotionGenerator;
+using MotionGenerator.Entity.Soul;
 using RLCreature.BodyGenerator;
 using RLCreature.BodyGenerator.Manipulatables;
 using RLCreature.Sample.SimpleHunting;
@@ -16,7 +18,7 @@ namespace RLCreature.Sample.Driving
         {
             var plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
             plane.transform.position = Vector3.zero;
-            plane.transform.localScale = Vector3.one * 100;
+            plane.transform.localScale = Vector3.one * 1000;
             var unitPlaneSize = 10;
             _size = new Rect(
                 (plane.transform.position.x - plane.transform.lossyScale.x * unitPlaneSize) / 2,
@@ -37,13 +39,13 @@ namespace RLCreature.Sample.Driving
         private IEnumerator SpawnSome()
         {
             yield return new WaitForSeconds(60);
-            SpawnCreature();
-            yield return new WaitForSeconds(60);
-            SpawnCreature();
-            yield return new WaitForSeconds(60);
-            SpawnCreature();
-            yield return new WaitForSeconds(60);
-            SpawnCreature();
+//            SpawnCreature();
+//            yield return new WaitForSeconds(60);
+//            SpawnCreature();
+//            yield return new WaitForSeconds(60);
+//            SpawnCreature();
+//            yield return new WaitForSeconds(60);
+//            SpawnCreature();
         }
 
 
@@ -69,9 +71,9 @@ namespace RLCreature.Sample.Driving
             food.GetComponent<Renderer>().material.color = Color.green;
             food.GetComponent<Collider>().isTrigger = true;
             food.transform.position = new Vector3(
-                x: _size.xMin + Random.value * _size.width,
+                x: _size.xMin + Random.value * _size.width / 2 + _size.width / 4,
                 y: 0,
-                z: _size.yMin + Random.value * _size.height
+                z: _size.yMin + Random.value * _size.height / 2 + _size.height / 4
             );
         }
 
@@ -79,17 +81,28 @@ namespace RLCreature.Sample.Driving
         {
             var prefab = (GameObject) Resources.Load("Prefabs/Car");
             var car = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+            car.AddComponent<BackToCenterBehaviour>();
             CarControlManipulatable.CreateComponent(car);
             Sensor.CreateComponent(car, typeof(Food), State.BasicKeys.RelativeFoodPosition, range: 100f);
             Mouth.CreateComponent(car, typeof(Food));
 
             var actions = LocomotionAction.EightDirections();
             var sequenceMaker = new EvolutionarySequenceMaker(epsilon: 0.3f, minimumCandidates: 30);
+//            var decisionMaker = new ReinforcementDecisionMaker(
+//                keyOrder: new[]
+//                {
+//                    State.BasicKeys.Forward,
+//                    State.BasicKeys.RelativeFoodPosition
+//                }, soulWeights: new[]
+//                {
+//                    1f
+//                });
+            var decisionMaker = new FollowPointDecisionMaker(State.BasicKeys.RelativeFoodPosition);
             var brain = new Brain(
-                new FollowPointDecisionMaker(State.BasicKeys.RelativeFoodPosition),
+                decisionMaker,
                 sequenceMaker
             );
-            Agent.CreateComponent(car, brain, new Body(car), actions);
+            Agent.CreateComponent(car, brain, new Body(car), actions, souls: new List<ISoul>(){new SnufflingDifferencialSoul()});
 
             return car;
         }
