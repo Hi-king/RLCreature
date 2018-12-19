@@ -57,10 +57,10 @@ namespace RLCreature.BodyGenerator
 
         void FixedUpdate()
         {
-            if (transform.position.y < 0) // out from ground
-            {
-                Destroy(this.gameObject);
-            }
+//            if (transform.position.y < 0) // out from ground
+//            {
+//                Destroy(this.gameObject);
+//            }
 
             UpdateAction();
         }

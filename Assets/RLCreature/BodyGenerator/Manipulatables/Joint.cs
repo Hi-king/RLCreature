@@ -6,9 +6,9 @@ namespace RLCreature.BodyGenerator.Manipulatables
 {
     public class Joint : ManipulatableBase
     {
-        private const int MaximumForce = 10000;
-        private const float PositionDamper = 20;
-        private const float PositionSpring = 1000;
+        private const int MaximumForce = 1000000;
+        private const float PositionDamper = 20000;
+        private const float PositionSpring = 1000000;
         private float _targetForce;
         public List<float> TargetAngle = new List<float> {0, 0, 0};
         private int _consumedFrames = 0;
@@ -31,6 +31,7 @@ namespace RLCreature.BodyGenerator.Manipulatables
             _joint.angularXMotion = ConfigurableJointMotion.Limited;
             _joint.angularYMotion = ConfigurableJointMotion.Limited;
             _joint.angularZMotion = ConfigurableJointMotion.Limited;
+            _joint.projectionDistance = 0.01f;
             _targetForce = targetForce;
             return this;
         }

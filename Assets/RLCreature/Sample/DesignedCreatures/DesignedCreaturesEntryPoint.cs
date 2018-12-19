@@ -65,6 +65,7 @@ namespace RLCreature.Sample.DesignedCreatures
             // Initialize Brain
             var actions = LocomotionAction.EightDirections();
             var sequenceMaker = new EvolutionarySequenceMaker(epsilon: 0.1f, minimumCandidates: 30);
+            
             var decisionMaker = new FollowPointDecisionMaker(State.BasicKeys.RelativeFoodPosition);
             var souls = new List<ISoul>() {new GluttonySoul()};
 
